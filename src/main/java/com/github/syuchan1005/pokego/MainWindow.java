@@ -11,6 +11,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -38,9 +40,12 @@ public class MainWindow extends JFrame {
 		Util.setLookAndFeel(this);
 	}
 
+	// private static Field protoField;
+
 	public void addComponent() {
 		tabbedPane1.remove(0);
 		tabbedPane1.addTab("Player", new PlayerWindow(Util.getPokemonGo().getPlayerProfile()).getMainPanel());
+		tabbedPane1.addTab("Items", new ItemWindow(Util.getPokemonGo().getInventories().getItemBag()).getMainPanel());
 		pokemons = Util.getPokemonGo().getInventories().getPokebank().getPokemons();
 		Collections.sort(pokemons, new Comparator<Pokemon>() {
 			@Override
@@ -54,15 +59,18 @@ public class MainWindow extends JFrame {
 		}
 		tabbedPane1.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		/*
-		tabbedPane1.addChangeListener(event -> {
-			try {
-				if(protoField == null) {
-					protoField = Pokemon.class.getDeclaredField("proto");
-					protoField.setAccessible(true);
+		tabbedPane1.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent event) {
+				try {
+					if(protoField == null) {
+						protoField = Pokemon.class.getDeclaredField("proto");
+						protoField.setAccessible(true);
+					}
+					System.out.println(protoField.get(pokemons.get(((JTabbedPane) event.getSource()).getSelectedIndex())).toString());
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				System.out.println(protoField.get(pokemons.get(((JTabbedPane) event.getSource()).getSelectedIndex())).toString());
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		});
 		*/

@@ -657,11 +657,13 @@ public enum PokemonEnum {
 	private final int id;
 	private final String jpName;
 	private final String name;
+	private final PokemonType[] type;
 
-	PokemonEnum(int id, String jpName, String name) {
+	PokemonEnum(int id, String jpName, String name, PokemonType... type) {
 		this.id = id;
 		this.jpName = jpName;
 		this.name = name;
+		this.type = type;
 	}
 
 	public int getId() {
@@ -674,6 +676,11 @@ public enum PokemonEnum {
 
 	public String getName() {
 		return name;
+	}
+
+	public PokemonType[] getType() {
+		return new PokemonType[] {PokemonType.Unimplemented};
+		// return type;
 	}
 
 	public static PokemonEnum getPokemonEnumByid(int id) {
