@@ -15,6 +15,7 @@ public class ContentWindow {
 	private JPanel mainPanel;
 	private JLabel pokemonImage;
 	private JLabel pokemonName;
+	private JLabel PokemonNickname;
 	private JLabel pokemonCP;
 	private JLabel pokemonType;
 	private JLabel pokemonHP;
@@ -34,6 +35,7 @@ public class ContentWindow {
 			pokemonImage.setText("");
 		}
 		pokemonName.setText(PokemonEnum.getPokemonEnumByid(pokemon.getPokemonId().getNumber()).getJpName());
+		PokemonNickname.setText(pokemon.getNickname());
 		pokemonCP.setText("CP: " + pokemon.getCp());
 		pokemonType.setText(PokemonType.ArraytoString(pokemonEnum.getType()));
 		pokemonHP.setText(pokemon.getStamina() + " / " + pokemon.getMaxStamina());

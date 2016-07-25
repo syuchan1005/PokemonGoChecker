@@ -15,6 +15,7 @@ public class PlayerWindow {
 	private JLabel playerNowXP;
 	private JLabel playerMaxXP;
 	private JLabel playerTeam;
+	private JLabel pokemonCount;
 
 	public PlayerWindow(PlayerProfile profile) {
 		playerName.setText(profile.getUsername());
@@ -22,6 +23,7 @@ public class PlayerWindow {
 		playerNowXP.setText(String.valueOf(profile.getStats().getPrevLevelXp()));
 		playerMaxXP.setText(String.valueOf(profile.getStats().getNextLevelXp()));
 		playerTeam.setText(profile.getTeam().name());
+		pokemonCount.setText(String.valueOf(profile.getPokemonStorage()));
 	}
 
 	public JPanel getMainPanel() {

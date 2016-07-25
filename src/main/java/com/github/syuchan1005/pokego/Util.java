@@ -2,6 +2,7 @@ package com.github.syuchan1005.pokego;
 
 import POGOProtos.Networking.Envelopes.RequestEnvelopeOuterClass;
 import com.pokegoapi.api.PokemonGo;
+import com.pokegoapi.auth.GoogleLogin;
 import com.pokegoapi.auth.PtcLogin;
 import com.pokegoapi.exceptions.LoginFailedException;
 import com.pokegoapi.exceptions.RemoteServerException;
@@ -23,7 +24,12 @@ import java.net.URL;
  */
 public class Util {
 	private static PokemonGo pokemonGo;
+	private static LoginType type;
 	private static String userName, passWord;
+
+	public static void setType(LoginType type) {
+		Util.type = type;
+	}
 
 	public static void setUserName(String userName) {
 		Util.userName = userName;
@@ -57,13 +63,37 @@ public class Util {
 			OkHttpClient http = new OkHttpClient();
 			RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo auth = null;
 			try {
-				auth = new PtcLogin(http).login(userName, passWord);
+				switch (type) {
+					case PTC:
+						auth = new PtcLogin(http).login(userName, passWord);
+						break;
+					/*
+					case Google:
+						auth = new GoogleLogin(http).login(userName, passWord);
+						break;
+						*/
+				}
 				pokemonGo = new PokemonGo(auth, http);
 			} catch (LoginFailedException | RemoteServerException e) {
 				e.printStackTrace();
 			}
 		}
 		return pokemonGo;
+	}
+
+	enum LoginType {
+		PTC(0);
+		// Google(1);
+
+		private final int id;
+
+		LoginType(int id) {
+			this.id = id;
+		}
+
+		public int getId() {
+			return id;
+		}
 	}
 
 	public static void setLookAndFeel(JFrame jFrame) {

@@ -1,6 +1,7 @@
 package com.github.syuchan1005.pokego;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -15,11 +16,13 @@ public class LoginWindow {
 	private JTextField userText;
 	private JPasswordField passText;
 	private JButton loginButton;
+	private JComboBox<Enum> comboBox1;
 
 	public LoginWindow(final MainWindow mainWindow) {
 		loginButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				Util.setType(((Util.LoginType) comboBox1.getSelectedItem()));
 				Util.setUserName(getUserText());
 				Util.setPassWord(getPassText());
 				mainWindow.addComponent();
@@ -37,5 +40,9 @@ public class LoginWindow {
 
 	public String getPassText() {
 		return String.valueOf(passText.getPassword());
+	}
+
+	private void createUIComponents() {
+		comboBox1 = new JComboBox<Enum>(Util.LoginType.values());
 	}
 }
