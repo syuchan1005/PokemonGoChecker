@@ -1,6 +1,11 @@
 package com.github.syuchan1005.pokego;
 
+import com.pokegoapi.api.PokemonGo;
+import com.pokegoapi.api.inventory.Inventories;
 import com.pokegoapi.api.pokemon.Pokemon;
+import com.pokegoapi.exceptions.LoginFailedException;
+import com.pokegoapi.exceptions.RemoteServerException;
+import com.pokegoapi.util.Log;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -24,7 +29,8 @@ import java.util.List;
 /**
  * Created by syuchan on 2016/07/24.
  */
-public class MainWindow extends JFrame implements ActionListener, Window{
+public class MainWindow extends JFrame implements ActionListener, Window {
+	private String sep = System.getProperty("line.separator");
 	private JPanel mainPanel;
 	private JMenuBar menuBar;
 	private JMenu sortMenu;
@@ -85,12 +91,19 @@ public class MainWindow extends JFrame implements ActionListener, Window{
 		this.setJMenuBar(menuBar);
 	}
 
-	public void addComponent() {
+	public void addComponent() throws LoginFailedException {
+		PokemonGo pokemonGo = null;
+		try {
+			pokemonGo = Util.getPokemonGo();
+		} catch (RemoteServerException e) {
+			throw new LoginFailedException();
+		}
+		Inventories inventories = pokemonGo.getInventories();
 		tabbedPane1.remove(0);
-		tabbedPane1.addTab("Player", (playerWindow = new PlayerWindow(Util.getPokemonGo().getPlayerProfile(), Util.getPokemonGo().getInventories().getPokebank().getPokemons().size())).getMainPanel());
-		tabbedPane1.addTab("Items", (itemWindow = new ItemWindow(Util.getPokemonGo().getInventories().getItemBag())).getMainPanel());
+		tabbedPane1.addTab("Player", (playerWindow = new PlayerWindow(pokemonGo.getPlayerProfile(), inventories.getPokebank().getPokemons().size())).getMainPanel());
+		tabbedPane1.addTab("Items", (itemWindow = new ItemWindow(inventories.getItemBag())).getMainPanel());
 		pokemons = new ArrayList<>();
-		for(Pokemon pokemon : Util.getPokemonGo().getInventories().getPokebank().getPokemons()) {
+		for(Pokemon pokemon : inventories.getPokebank().getPokemons()) {
 			pokemons.add(new ContentWindow(pokemon));
 		}
 		addTabs(false);
@@ -179,8 +192,18 @@ public class MainWindow extends JFrame implements ActionListener, Window{
 		return mainPanel;
 	}
 
+	public void showInputCode(String url, String code) {
+		JOptionPane.showMessageDialog(this, GoogleLoginWindow.getMainPanel(url, code));
+	}
+
+	public void authComplete() {
+		Util.googleAuth = true;
+	}
+
 	public static void main(String[] args) {
 		MainWindow mainWindow = new MainWindow();
+		PLogger logger = new PLogger(mainWindow);
+		Log.setInstance(logger);
 		mainWindow.setVisible(true);
 	}
 }

@@ -2,6 +2,7 @@ package com.github.syuchan1005.pokego;
 
 import POGOProtos.Networking.Envelopes.RequestEnvelopeOuterClass;
 import com.pokegoapi.api.PokemonGo;
+import com.pokegoapi.auth.GoogleLogin;
 import com.pokegoapi.auth.PtcLogin;
 import com.pokegoapi.exceptions.LoginFailedException;
 import com.pokegoapi.exceptions.RemoteServerException;
@@ -18,8 +19,13 @@ import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -30,6 +36,7 @@ public class Util {
 	private static PokemonGo pokemonGo;
 	private static LoginType type;
 	private static String userName, passWord;
+	public static boolean googleAuth = false;
 
 	public static void setType(LoginType type) {
 		Util.type = type;
@@ -62,32 +69,27 @@ public class Util {
 		return new JButton((imageIcon == null) ? null : imageIcon);
 	}
 
-	public static PokemonGo getPokemonGo() {
+	public static PokemonGo getPokemonGo() throws LoginFailedException, RemoteServerException {
 		if(pokemonGo == null) {
 			OkHttpClient http = new OkHttpClient();
 			RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo auth = null;
-			try {
-				switch (type) {
-					case PTC:
-						auth = new PtcLogin(http).login(userName, passWord);
-						break;
-					/*
-					case Google:
-						auth = new GoogleLogin(http).login(userName, passWord);
-						break;
-						*/
-				}
-				pokemonGo = new PokemonGo(auth, http);
-			} catch (LoginFailedException | RemoteServerException e) {
-				e.printStackTrace();
+			switch (type) {
+				case PTC:
+					auth = new PtcLogin(http).login(userName, passWord);
+					break;
+				case Google:
+					auth = new GoogleLogin(http).login(userName, passWord);
+					while(!googleAuth);
+					break;
 			}
+			pokemonGo = new PokemonGo(auth, http);
 		}
 		return pokemonGo;
 	}
 
 	enum LoginType {
-		PTC(0);
-		// Google(1);
+		PTC(0),
+		Google(1);
 
 		private final int id;
 

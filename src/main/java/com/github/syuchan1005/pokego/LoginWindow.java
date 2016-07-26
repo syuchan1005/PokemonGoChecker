@@ -1,7 +1,10 @@
 package com.github.syuchan1005.pokego;
 
+import com.pokegoapi.exceptions.LoginFailedException;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -22,10 +25,15 @@ public class LoginWindow {
 		loginButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Util.setType(((Util.LoginType) comboBox1.getSelectedItem()));
+				Util.LoginType type = (Util.LoginType) comboBox1.getSelectedItem();
+				Util.setType(type);
 				Util.setUserName(getUserText());
 				Util.setPassWord(getPassText());
-				mainWindow.addComponent();
+				try {
+					mainWindow.addComponent();
+				} catch (LoginFailedException e1) {
+					JOptionPane.showMessageDialog(mainWindow, "Login Failed");
+				}
 			}
 		});
 	}

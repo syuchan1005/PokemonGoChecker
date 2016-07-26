@@ -39,7 +39,7 @@ public class ContentWindow implements Window{
 			pokemonImage.setText("");
 		}
 		pokemonName.setText(PokemonEnum.getPokemonEnumByid(pokemon.getPokemonId().getNumber()).getJpName());
-		PokemonNickname.setText(pokemon.getNickname());
+		if(pokemon.getNickname().length() != 0)PokemonNickname.setText(pokemon.getNickname());
 		pokemonCP.setText("CP: " + pokemon.getCp());
 		pokemonType.setText(PokemonType.ArraytoString(pokemonEnum.getType()));
 		pokemonHP.setText(pokemon.getStamina() + " / " + pokemon.getMaxStamina());
