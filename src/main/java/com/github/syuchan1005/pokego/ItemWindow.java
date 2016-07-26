@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Created by syuchan on 2016/07/25.
  */
-public class ItemWindow {
+public class ItemWindow implements Window{
 	private JPanel mainPanel;
 	private JTable itemTable;
 	private static DefaultTableModel model = new DefaultTableModel(new String[] {"ItemName", "Count"}, 0);
@@ -34,6 +34,7 @@ public class ItemWindow {
 		}
 	}
 
+	@Override
 	public JPanel getMainPanel() {
 		return mainPanel;
 	}

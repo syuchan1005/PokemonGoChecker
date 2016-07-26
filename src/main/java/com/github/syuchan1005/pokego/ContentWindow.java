@@ -6,12 +6,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.Image;
+import java.awt.Robot;
 import java.lang.reflect.Field;
 
 /**
  * Created by syuchan on 2016/07/24.
  */
-public class ContentWindow {
+public class ContentWindow implements Window{
 	private JPanel mainPanel;
 	private JLabel pokemonImage;
 	private JLabel pokemonName;
@@ -22,9 +23,12 @@ public class ContentWindow {
 	private JLabel pokemonWeight;
 	private JLabel pokemonHeight;
 	private JLabel pokemonHasCandy;
+	private Pokemon pokemon;
+	private static Robot robot;
 	private static Field pokemonProto, weightKg;
 
 	public ContentWindow(Pokemon pokemon) {
+		this.pokemon = pokemon;
 		PokemonEnum pokemonEnum = PokemonEnum.getPokemonEnumByid(pokemon.getPokemonId().getNumber());
 		ImageIcon imageIcon = Util.getPokemonImage(pokemon.getPokemonId().getNumber());
 		if(imageIcon == null) {
@@ -42,6 +46,10 @@ public class ContentWindow {
 		pokemonWeight.setText(String.valueOf(getWeight(pokemon)));
 		pokemonHeight.setText(String.valueOf(pokemon.getHeightM()));
 		pokemonHasCandy.setText(String.valueOf(pokemon.getCandy()));
+	}
+
+	public Pokemon getPokemon() {
+		return pokemon;
 	}
 
 	public static float getWeight(Pokemon pokemon) {
@@ -62,6 +70,7 @@ public class ContentWindow {
 		return -1;
 	}
 
+	@Override
 	public JPanel getMainPanel() {
 		return mainPanel;
 	}

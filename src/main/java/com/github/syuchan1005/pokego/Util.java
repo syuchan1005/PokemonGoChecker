@@ -2,13 +2,12 @@ package com.github.syuchan1005.pokego;
 
 import POGOProtos.Networking.Envelopes.RequestEnvelopeOuterClass;
 import com.pokegoapi.api.PokemonGo;
-import com.pokegoapi.auth.GoogleLogin;
 import com.pokegoapi.auth.PtcLogin;
 import com.pokegoapi.exceptions.LoginFailedException;
 import com.pokegoapi.exceptions.RemoteServerException;
-import com.pokegoapi.util.Log;
 import okhttp3.OkHttpClient;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,6 +15,11 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import java.awt.Component;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -94,6 +98,15 @@ public class Util {
 		public int getId() {
 			return id;
 		}
+	}
+
+	public static void saveImage(Component component, File file) throws IOException {
+		BufferedImage bufferedImage = new BufferedImage(component.getWidth(), component.getHeight(), BufferedImage.TYPE_INT_RGB);
+		Graphics2D graphics2D = bufferedImage.createGraphics();
+		component.paint(graphics2D);
+		graphics2D.dispose();
+		file.createNewFile();
+		ImageIO.write(bufferedImage, "PNG", file);
 	}
 
 	public static void setLookAndFeel(JFrame jFrame) {
