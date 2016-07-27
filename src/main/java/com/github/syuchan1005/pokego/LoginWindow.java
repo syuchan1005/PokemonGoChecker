@@ -34,7 +34,7 @@ public class LoginWindow {
 				try {
 					mainWindow.addComponent();
 				} catch (LoginFailedException e1) {
-					JOptionPane.showMessageDialog(mainWindow, "Login Failed");
+					JOptionPane.showMessageDialog(mainWindow, "Login Failed", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
