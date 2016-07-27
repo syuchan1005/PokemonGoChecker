@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 /**
  * Created by syuchan on 2016/07/24.
  */
-public class PlayerWindow implements Window{
+public class PlayerWindow implements Window {
 	private JPanel mainPanel;
 	private JLabel playerName;
 	private JLabel playerLevel;

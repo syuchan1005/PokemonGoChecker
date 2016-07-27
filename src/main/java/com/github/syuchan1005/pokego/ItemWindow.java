@@ -14,10 +14,10 @@ import java.util.Map;
 /**
  * Created by syuchan on 2016/07/25.
  */
-public class ItemWindow implements Window{
+public class ItemWindow implements Window {
 	private JPanel mainPanel;
 	private JTable itemTable;
-	private static DefaultTableModel model = new DefaultTableModel(new String[] {"ItemName", "Count"}, 0);
+	private static DefaultTableModel model = new DefaultTableModel(new String[]{"ItemName", "Count"}, 0);
 	private static Field items;
 
 	public ItemWindow(ItemBag itemBag) {
@@ -27,7 +27,7 @@ public class ItemWindow implements Window{
 				items.setAccessible(true);
 			}
 			for(Map.Entry<ItemIdOuterClass.ItemId, Item> entry : ((HashMap<ItemIdOuterClass.ItemId, Item>) items.get(itemBag)).entrySet()) {
-				model.addRow(new Object[] {entry.getKey().name(), entry.getValue().getCount()});
+				model.addRow(new Object[]{entry.getKey().name(), entry.getValue().getCount()});
 			}
 		} catch (ReflectiveOperationException e) {
 			e.printStackTrace();

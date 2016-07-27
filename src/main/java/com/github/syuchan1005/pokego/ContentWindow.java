@@ -5,14 +5,15 @@ import com.pokegoapi.api.pokemon.Pokemon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
 import java.awt.Image;
-import java.awt.Robot;
 import java.lang.reflect.Field;
 
 /**
  * Created by syuchan on 2016/07/24.
  */
-public class ContentWindow implements Window{
+public class ContentWindow implements Window {
 	private JPanel mainPanel;
 	private JLabel pokemonImage;
 	private JLabel pokemonName;
@@ -24,7 +25,6 @@ public class ContentWindow implements Window{
 	private JLabel pokemonHeight;
 	private JLabel pokemonHasCandy;
 	private Pokemon pokemon;
-	private static Robot robot;
 	private static Field pokemonProto, weightKg;
 
 	public ContentWindow(Pokemon pokemon) {
@@ -38,8 +38,9 @@ public class ContentWindow implements Window{
 			pokemonImage.setIcon(imageIcon);
 			pokemonImage.setText("");
 		}
+		pokemonImage.setBorder(new LineBorder(Color.black));
 		pokemonName.setText(PokemonEnum.getPokemonEnumByid(pokemon.getPokemonId().getNumber()).getJpName());
-		if(pokemon.getNickname().length() != 0)PokemonNickname.setText(pokemon.getNickname());
+		PokemonNickname.setText((pokemon.getNickname().length() != 0) ? pokemon.getNickname() : "NoNickname");
 		pokemonCP.setText("CP: " + pokemon.getCp());
 		pokemonType.setText(PokemonType.ArraytoString(pokemonEnum.getType()));
 		pokemonHP.setText(pokemon.getStamina() + " / " + pokemon.getMaxStamina());

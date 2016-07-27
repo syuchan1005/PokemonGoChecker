@@ -12,7 +12,8 @@ public class GoogleLoginWindow {
 	private JTextField urlText;
 	private JTextField codeText;
 
-	private GoogleLoginWindow() {}
+	private GoogleLoginWindow() {
+	}
 
 	public static GoogleLoginWindow getInstance() {
 		if(googleLoginWindow == null) googleLoginWindow = new GoogleLoginWindow();

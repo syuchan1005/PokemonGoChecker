@@ -2,8 +2,10 @@ package com.github.syuchan1005.pokego;
 
 import POGOProtos.Networking.Envelopes.RequestEnvelopeOuterClass;
 import com.pokegoapi.api.PokemonGo;
-import com.pokegoapi.auth.GoogleLogin;
-import com.pokegoapi.auth.PtcLogin;
+import com.pokegoapi.auth.GoogleAuthJson;
+import com.pokegoapi.auth.GoogleAuthTokenJson;
+import com.pokegoapi.auth.GoogleCredentialProvider;
+import com.pokegoapi.auth.PtcCredentialProvider;
 import com.pokegoapi.exceptions.LoginFailedException;
 import com.pokegoapi.exceptions.RemoteServerException;
 import okhttp3.OkHttpClient;
@@ -19,20 +21,15 @@ import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
  * Created by syuchan on 2016/07/24.
  */
-public class Util {
+public class Util implements GoogleCredentialProvider.OnGoogleLoginOAuthCompleteListener {
 	private static PokemonGo pokemonGo;
 	private static LoginType type;
 	private static String userName, passWord;
@@ -75,14 +72,13 @@ public class Util {
 			RequestEnvelopeOuterClass.RequestEnvelope.AuthInfo auth = null;
 			switch (type) {
 				case PTC:
-					auth = new PtcLogin(http).login(userName, passWord);
+					pokemonGo = new PokemonGo(new PtcCredentialProvider(http, userName, passWord), http);
 					break;
 				case Google:
-					auth = new GoogleLogin(http).login(userName, passWord);
-					while(!googleAuth);
+					pokemonGo = new PokemonGo(new GoogleCredentialProvider(http, new Util()), http);
+					while(!googleAuth) ;
 					break;
 			}
-			pokemonGo = new PokemonGo(auth, http);
 		}
 		return pokemonGo;
 	}
@@ -119,4 +115,15 @@ public class Util {
 		}
 		SwingUtilities.updateComponentTreeUI(jFrame);
 	}
+
+	@Override
+	public void onInitialOAuthComplete(GoogleAuthJson auth) {
+		JOptionPane.showMessageDialog(MainWindow.getInstance(), GoogleLoginWindow.getMainPanel(auth.getVerificationUrl(), auth.getUserCode()));
+	}
+
+	@Override
+	public void onTokenIdReceived(GoogleAuthTokenJson googleAuthTokenJson) {
+		googleAuth = true;
+	}
+
 }

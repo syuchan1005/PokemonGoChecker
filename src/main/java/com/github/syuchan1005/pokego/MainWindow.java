@@ -5,7 +5,6 @@ import com.pokegoapi.api.inventory.Inventories;
 import com.pokegoapi.api.pokemon.Pokemon;
 import com.pokegoapi.exceptions.LoginFailedException;
 import com.pokegoapi.exceptions.RemoteServerException;
-import com.pokegoapi.util.Log;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -43,8 +42,10 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 	private PlayerWindow playerWindow;
 	private ItemWindow itemWindow;
 	private static JFileChooser chooser;
+	private static MainWindow mainWindow;
 
 	public MainWindow() {
+		mainWindow = this;
 		this.setTitle("PokemonGoChecker");
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		loginWindow = new LoginWindow(this);
@@ -192,18 +193,12 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 		return mainPanel;
 	}
 
-	public void showInputCode(String url, String code) {
-		JOptionPane.showMessageDialog(this, GoogleLoginWindow.getMainPanel(url, code));
-	}
-
-	public void authComplete() {
-		Util.googleAuth = true;
+	public static MainWindow getInstance() {
+		return mainWindow;
 	}
 
 	public static void main(String[] args) {
 		MainWindow mainWindow = new MainWindow();
-		PLogger logger = new PLogger(mainWindow);
-		Log.setInstance(logger);
 		mainWindow.setVisible(true);
 	}
 }

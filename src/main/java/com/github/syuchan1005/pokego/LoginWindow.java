@@ -10,6 +10,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.regex.Pattern;
 
 /**
  * Created by syuchan on 2016/07/24.
@@ -20,6 +21,7 @@ public class LoginWindow {
 	private JPasswordField passText;
 	private JButton loginButton;
 	private JComboBox<Enum> comboBox1;
+	private JPanel ptcLoginPanel;
 
 	public LoginWindow(final MainWindow mainWindow) {
 		loginButton.addActionListener(new ActionListener() {
@@ -34,6 +36,13 @@ public class LoginWindow {
 				} catch (LoginFailedException e1) {
 					JOptionPane.showMessageDialog(mainWindow, "Login Failed");
 				}
+			}
+		});
+		comboBox1.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<Enum> comboBox = (JComboBox<Enum>) e.getSource();
+				ptcLoginPanel.setVisible(((Util.LoginType) comboBox.getSelectedItem()) == Util.LoginType.PTC);
 			}
 		});
 	}
