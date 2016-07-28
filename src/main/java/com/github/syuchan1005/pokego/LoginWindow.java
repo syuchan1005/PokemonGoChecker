@@ -10,6 +10,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.regex.Pattern;
 
 /**
@@ -27,6 +29,7 @@ public class LoginWindow {
 		loginButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				loginButton.setEnabled(false);
 				Util.LoginType type = (Util.LoginType) comboBox1.getSelectedItem();
 				Util.setType(type);
 				Util.setUserName(getUserText());
@@ -35,6 +38,7 @@ public class LoginWindow {
 					mainWindow.addComponent();
 				} catch (LoginFailedException e1) {
 					JOptionPane.showMessageDialog(mainWindow, "Login Failed", "Error", JOptionPane.ERROR_MESSAGE);
+					loginButton.setEnabled(true);
 				}
 			}
 		});
@@ -43,6 +47,13 @@ public class LoginWindow {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox<Enum> comboBox = (JComboBox<Enum>) e.getSource();
 				ptcLoginPanel.setVisible(((Util.LoginType) comboBox.getSelectedItem()) == Util.LoginType.PTC);
+			}
+		});
+		passText.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() != KeyEvent.VK_ENTER) return;
+				loginButton.doClick();
 			}
 		});
 	}

@@ -79,6 +79,7 @@ public class Util implements GoogleCredentialProvider.OnGoogleLoginOAuthComplete
 					while(!googleAuth) ;
 					break;
 			}
+			MainWindow.getInstance().createMenuBar();
 		}
 		return pokemonGo;
 	}

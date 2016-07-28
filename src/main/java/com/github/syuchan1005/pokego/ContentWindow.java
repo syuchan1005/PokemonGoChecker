@@ -31,6 +31,7 @@ public class ContentWindow implements Window {
 	private JLabel pokemonHeight;
 	private JLabel pokemonHasCandy;
 	private JButton renameButton;
+	private JButton transferButton;
 	private Pokemon pokemon;
 	private ContentWindow instance;
 	private static Field pokemonProto, weightKg;
@@ -63,14 +64,36 @@ public class ContentWindow implements Window {
 				if(name == null) return;
 				try {
 					pokemon.renamePokemon(name);
+					instance.pokemonNickname.setText("(" + name + ")");
 				} catch (LoginFailedException e1) {
-					JOptionPane.showMessageDialog(instance.getMainPanel(), "Oops! Login Failed", "Error", JOptionPane.ERROR_MESSAGE);
+					errorDialog();
 				} catch (RemoteServerException e1) {
-					JOptionPane.showMessageDialog(instance.getMainPanel(), "Oops! Remote Server Failed", "Error", JOptionPane.ERROR_MESSAGE);
+					errorDialog();
 				}
-				instance.pokemonNickname.setText("(" + name + ")");
 			}
 		});
+		transferButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int dialog = JOptionPane.showConfirmDialog(instance.getMainPanel(),
+						"You can't take it back after it's transferred to the Professor.\n" +
+						"Do you really want to transfer Bulbasaur to the Professor?");
+				if(dialog != 0) return;
+				try {
+					pokemon.transferPokemon();
+					MainWindow.getInstance().updatePokemons();
+					MainWindow.getInstance().addTabs();
+				} catch (LoginFailedException e1) {
+					errorDialog();
+				} catch (RemoteServerException e1) {
+					errorDialog();
+				}
+			}
+		});
+	}
+
+	public void errorDialog() {
+		JOptionPane.showMessageDialog(instance.getMainPanel(), "Oops! Remote Server Failed", "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
 	public Pokemon getPokemon() {

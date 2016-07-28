@@ -35,7 +35,7 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 	private JMenu sortMenu;
 	private List<JMenuItem> sortItems = new ArrayList<>();
 	private JMenu otherMenu;
-	private JMenuItem createImage;
+	private JMenuItem createImage, updatePokemon;
 	private JTabbedPane tabbedPane1;
 	private List<ContentWindow> pokemons;
 	private LoginWindow loginWindow;
@@ -51,8 +51,7 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 		loginWindow = new LoginWindow(this);
 		tabbedPane1.addTab("Login", loginWindow.getMainPanel());
 		this.setContentPane(mainPanel);
-		this.setSize(450, 300);
-		this.createMenuBar();
+		this.setSize(500, 350);
 		Util.setLookAndFeel(this);
 		if(chooser == null) {
 			chooser = new JFileChooser();
@@ -70,7 +69,7 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 		}
 	}
 
-	private void createMenuBar() {
+	public void createMenuBar() {
 		menuBar = new JMenuBar();
 		sortMenu = new JMenu("Sort");
 		sortItems.add(new JMenuItem("Time"));
@@ -86,7 +85,10 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 		otherMenu = new JMenu("Other");
 		createImage = new JMenuItem("createImage");
 		createImage.addActionListener(this);
+		updatePokemon = new JMenuItem("updatePokemons");
+		updatePokemon.addActionListener(this);
 		otherMenu.add(createImage);
+		otherMenu.add(updatePokemon);
 		menuBar.add(sortMenu);
 		menuBar.add(otherMenu);
 		this.setJMenuBar(menuBar);
@@ -96,6 +98,7 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 		PokemonGo pokemonGo = null;
 		try {
 			pokemonGo = Util.getPokemonGo();
+			this.updatePokemons();
 		} catch (RemoteServerException e) {
 			throw new LoginFailedException();
 		}
@@ -103,24 +106,27 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 		tabbedPane1.remove(0);
 		tabbedPane1.addTab("Player", (playerWindow = new PlayerWindow(pokemonGo.getPlayerProfile(), inventories.getPokebank().getPokemons().size())).getMainPanel());
 		tabbedPane1.addTab("Items", (itemWindow = new ItemWindow(inventories.getItemBag())).getMainPanel());
-		pokemons = new ArrayList<>();
-		for(Pokemon pokemon : inventories.getPokebank().getPokemons()) {
-			pokemons.add(new ContentWindow(pokemon));
-		}
-		addTabs(false);
+		this.addTabs();
 		tabbedPane1.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 	}
 
-	public void addTabs(boolean override) {
-		if(override) {
-			tabbedPane1.removeAll();
-			tabbedPane1.addTab("Player", playerWindow.getMainPanel());
-			tabbedPane1.addTab("Items", itemWindow.getMainPanel());
-		}
+	public void addTabs() {
+		tabbedPane1.removeAll();
+		tabbedPane1.addTab("Player", playerWindow.getMainPanel());
+		tabbedPane1.addTab("Items", itemWindow.getMainPanel());
 		for(ContentWindow pokemon : pokemons) {
 			tabbedPane1.addTab(
 					PokemonEnum.getPokemonEnumByid(pokemon.getPokemon().getPokemonId().getNumber()).getJpName(),
 					pokemon.getMainPanel());
+		}
+	}
+
+	public void updatePokemons() throws LoginFailedException, RemoteServerException {
+		Inventories inventories = Util.getPokemonGo().getInventories();
+		inventories.updateInventories();
+		pokemons = new ArrayList<>();
+		for(Pokemon pokemon : inventories.getPokebank().getPokemons()) {
+			pokemons.add(new ContentWindow(pokemon));
 		}
 	}
 
@@ -183,8 +189,17 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 						e1.printStackTrace();
 					}
 					return;
+				case "UPDATEPOKEMONS":
+					try {
+						updatePokemons();
+					} catch (LoginFailedException e1) {
+						e1.printStackTrace();
+					} catch (RemoteServerException e1) {
+						e1.printStackTrace();
+					}
+					break;
 			}
-			addTabs(true);
+			addTabs();
 		}
 	}
 
