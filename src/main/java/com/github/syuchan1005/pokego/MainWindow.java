@@ -18,6 +18,8 @@ import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseWheelEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,7 +53,7 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 		loginWindow = new LoginWindow(this);
 		tabbedPane1.addTab("Login", loginWindow.getMainPanel());
 		this.setContentPane(mainPanel);
-		this.setSize(500, 350);
+		this.setSize(500, 360);
 		Util.setLookAndFeel(this);
 		if(chooser == null) {
 			chooser = new JFileChooser();
@@ -108,6 +110,16 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 		tabbedPane1.addTab("Items", (itemWindow = new ItemWindow(inventories.getItemBag())).getMainPanel());
 		this.addTabs();
 		tabbedPane1.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+		tabbedPane1.addMouseWheelListener(new MouseAdapter() {
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
+				int newIndex = tabbedPane.getSelectedIndex() + e.getWheelRotation();
+				if (newIndex < 0) tabbedPane.setSelectedIndex(0);
+				else if (newIndex >= tabbedPane.getTabCount()) tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+				else tabbedPane.setSelectedIndex(newIndex);
+			}
+		});
 	}
 
 	public void addTabs() {
@@ -192,6 +204,7 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 				case "UPDATEPOKEMONS":
 					try {
 						updatePokemons();
+						playerWindow.getPokemonCount().setText(pokemons.size() + " / " + Util.getPokemonGo().getPlayerProfile().getPokemonStorage());
 					} catch (LoginFailedException e1) {
 						e1.printStackTrace();
 					} catch (RemoteServerException e1) {

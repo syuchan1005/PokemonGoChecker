@@ -16,14 +16,22 @@ public class PlayerWindow implements Window {
 	private JLabel playerMaxXP;
 	private JLabel playerTeam;
 	private JLabel pokemonCount;
+	private JLabel stardustLabel;
+	private JLabel pokecoinLabel;
 
 	public PlayerWindow(PlayerProfile profile, int pCount) {
 		playerName.setText(profile.getUsername());
 		playerLevel.setText(String.valueOf(profile.getStats().getLevel()));
 		playerNowXP.setText(String.valueOf(profile.getStats().getPrevLevelXp()));
 		playerMaxXP.setText(String.valueOf(profile.getStats().getNextLevelXp()));
+		stardustLabel.setText(String.valueOf(profile.getCurrencies().get(PlayerProfile.Currency.STARDUST)));
+		pokecoinLabel.setText(String.valueOf(profile.getCurrencies().get(PlayerProfile.Currency.POKECOIN)));
 		playerTeam.setText(profile.getTeam().name());
 		pokemonCount.setText(pCount + " / " + profile.getPokemonStorage());
+	}
+
+	public JLabel getPokemonCount() {
+		return pokemonCount;
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.github.syuchan1005.pokego;
 
+import POGOProtos.Data.PokemonDataOuterClass;
 import com.pokegoapi.api.pokemon.Pokemon;
 import com.pokegoapi.exceptions.LoginFailedException;
 import com.pokegoapi.exceptions.RemoteServerException;
@@ -32,13 +33,24 @@ public class ContentWindow implements Window {
 	private JLabel pokemonHasCandy;
 	private JButton renameButton;
 	private JButton transferButton;
+	private JButton powerUpButton;
+	private JButton evolveButton;
+	private JLabel powerUpStardustLabel;
+	private JLabel powerUpCandyLabel;
+	private JLabel evolveCandyLabel;
+	private JLabel pokemonUpgrades;
 	private Pokemon pokemon;
 	private ContentWindow instance;
-	private static Field pokemonProto, weightKg;
 
 	public ContentWindow(final Pokemon pokemon) {
 		instance = this;
 		this.pokemon = pokemon;
+		PokemonDataOuterClass.PokemonData pokemonData = null;
+		try {
+			pokemonData = getPokemonData(pokemon);
+		} catch (ReflectiveOperationException e) {
+			e.printStackTrace();
+		}
 		PokemonEnum pokemonEnum = PokemonEnum.getPokemonEnumByid(pokemon.getPokemonId().getNumber());
 		final ImageIcon imageIcon = Util.getPokemonImage(pokemon.getPokemonId().getNumber());
 		if(imageIcon == null) {
@@ -54,9 +66,13 @@ public class ContentWindow implements Window {
 		pokemonCP.setText("CP: " + pokemon.getCp());
 		pokemonType.setText(PokemonType.ArraytoString(pokemonEnum.getType()));
 		pokemonHP.setText(pokemon.getStamina() + " / " + pokemon.getMaxStamina());
-		pokemonWeight.setText(String.valueOf(getWeight(pokemon)));
+		pokemonWeight.setText(String.valueOf(pokemonData.getWeightKg()));
 		pokemonHeight.setText(String.valueOf(pokemon.getHeightM()));
 		pokemonHasCandy.setText(String.valueOf(pokemon.getCandy()));
+		pokemonUpgrades.setText(String.valueOf(pokemonData.getNumUpgrades()));
+		powerUpStardustLabel.setText("Stardust: " + Util.getPowerUPStardust(pokemonData.getNumUpgrades()));
+		powerUpCandyLabel.setText("Candy: " + Util.getPowerUPCandy(pokemonData.getNumUpgrades()));
+		evolveCandyLabel.setText("Candy: " + pokemon.getCandiesToEvolve());
 		renameButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -90,6 +106,27 @@ public class ContentWindow implements Window {
 				}
 			}
 		});
+		powerUpButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
+		evolveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
+	}
+
+	private static Field protoField;
+	public static PokemonDataOuterClass.PokemonData getPokemonData(Pokemon pokemon) throws ReflectiveOperationException {
+		if(protoField == null) {
+			protoField = pokemon.getClass().getDeclaredField("proto");
+			protoField.setAccessible(true);
+		}
+		return ((PokemonDataOuterClass.PokemonData) protoField.get(pokemon));
 	}
 
 	public void errorDialog() {
@@ -98,24 +135,6 @@ public class ContentWindow implements Window {
 
 	public Pokemon getPokemon() {
 		return pokemon;
-	}
-
-	public static float getWeight(Pokemon pokemon) {
-		try {
-			if(pokemonProto == null) {
-				pokemonProto = pokemon.getClass().getDeclaredField("proto");
-				pokemonProto.setAccessible(true);
-			}
-			Object proto = pokemonProto.get(pokemon);
-			if(weightKg == null) {
-				weightKg = proto.getClass().getDeclaredField("weightKg_");
-				weightKg.setAccessible(true);
-			}
-			return ((float) weightKg.get(proto));
-		} catch (ReflectiveOperationException e) {
-			e.printStackTrace();
-		}
-		return -1;
 	}
 
 	@Override

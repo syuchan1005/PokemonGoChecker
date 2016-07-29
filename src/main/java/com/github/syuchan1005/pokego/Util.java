@@ -117,6 +117,33 @@ public class Util implements GoogleCredentialProvider.OnGoogleLoginOAuthComplete
 		SwingUtilities.updateComponentTreeUI(jFrame);
 	}
 
+	public static int getPowerUPStardust(int lv) {
+		int result = -1;
+		switch (lv / 4) {
+			case 0: result = 200; break;
+			case 1: result = 200; break;
+			case 2: result = 400; break;
+			case 3: result = 600; break;
+			case 4: result = 800; break;
+			case 5: result = 1000; break;
+			case 6: result = 1300; break;
+			case 7: result = 1600; break;
+			case 8: result = 1900; break;
+			case 9: result = 2200; break;
+			case 10: result = 2500; break;
+			case 11: result = 3000; break;
+			case 12: result = 3500; break;
+			case 13: result = 4000; break;
+			case 14: result = 4500; break;
+		}
+		return result;
+	}
+
+	public static int getPowerUPCandy(int lv) {
+		if(lv == 0) return 1;
+		return (int) Math.ceil(lv / 20.0);
+	}
+
 	@Override
 	public void onInitialOAuthComplete(GoogleAuthJson auth) {
 		JOptionPane.showMessageDialog(MainWindow.getInstance(), GoogleLoginWindow.getMainPanel(auth.getVerificationUrl(), auth.getUserCode()));

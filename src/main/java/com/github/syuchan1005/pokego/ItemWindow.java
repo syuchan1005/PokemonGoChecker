@@ -17,7 +17,12 @@ import java.util.Map;
 public class ItemWindow implements Window {
 	private JPanel mainPanel;
 	private JTable itemTable;
-	private static DefaultTableModel model = new DefaultTableModel(new String[]{"ItemName", "Count"}, 0);
+	private static DefaultTableModel model = new DefaultTableModel(new String[]{"ItemName", "Count"}, 0) {
+		@Override
+		public boolean isCellEditable(int row, int column) {
+			return false;
+		}
+	};
 	private static Field items;
 
 	public ItemWindow(ItemBag itemBag) {
