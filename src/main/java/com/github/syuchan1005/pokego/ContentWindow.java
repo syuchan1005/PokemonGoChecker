@@ -109,13 +109,37 @@ public class ContentWindow implements Window {
 		powerUpButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				int dialog = JOptionPane.showConfirmDialog(instance.getMainPanel(),
+						"Do you wait to power up " +
+								(pokemon.getNickname().isEmpty() ? PokemonEnum.getPokemonEnumByid(pokemon.getPokemonId().getNumber()).getName() : pokemon.getNickname()));
+				if(dialog != 0) return;
+				try {
+					pokemon.powerUp();
+					MainWindow.getInstance().updatePokemons();
+					MainWindow.getInstance().addTabs();
+				} catch (LoginFailedException e1) {
+					errorDialog();
+				} catch (RemoteServerException e1) {
+					errorDialog();
+				}
 			}
 		});
 		evolveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				int dialog = JOptionPane.showConfirmDialog(instance.getMainPanel(),
+						"Do you wait to evolve " +
+								(pokemon.getNickname().isEmpty() ? PokemonEnum.getPokemonEnumByid(pokemon.getPokemonId().getNumber()).getName() : pokemon.getNickname()));
+				if(dialog != 0) return;
+				try {
+					pokemon.evolve();
+					MainWindow.getInstance().updatePokemons();
+					MainWindow.getInstance().addTabs();
+				} catch (LoginFailedException e1) {
+					errorDialog();
+				} catch (RemoteServerException e1) {
+					errorDialog();
+				}
 			}
 		});
 	}
