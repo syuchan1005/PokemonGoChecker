@@ -2,15 +2,15 @@ package com.github.syuchan1005.pokego;
 
 import POGOProtos.Data.PokemonDataOuterClass;
 import com.pokegoapi.api.pokemon.Pokemon;
-import com.pokegoapi.exceptions.LoginFailedException;
-import com.pokegoapi.exceptions.RemoteServerException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -26,11 +26,6 @@ public class ContentWindow implements Window {
 	private JLabel pokemonName;
 	private JLabel pokemonNickname;
 	private JLabel pokemonCP;
-	private JLabel pokemonType;
-	private JLabel pokemonHP;
-	private JLabel pokemonWeight;
-	private JLabel pokemonHeight;
-	private JLabel pokemonHasCandy;
 	private JButton renameButton;
 	private JButton transferButton;
 	private JButton powerUpButton;
@@ -38,7 +33,8 @@ public class ContentWindow implements Window {
 	private JLabel powerUpStardustLabel;
 	private JLabel powerUpCandyLabel;
 	private JLabel evolveCandyLabel;
-	private JLabel pokemonUpgrades;
+	private DefaultTableModel model;
+	private JTable contentTable;
 	private Pokemon pokemon;
 	private ContentWindow instance;
 
@@ -64,15 +60,22 @@ public class ContentWindow implements Window {
 		pokemonName.setText(PokemonEnum.getPokemonEnumByid(pokemon.getPokemonId().getNumber()).getJpName());
 		pokemonNickname.setText((pokemon.getNickname().length() != 0) ? "(" + pokemon.getNickname() + ")" : "NoNickname");
 		pokemonCP.setText("CP: " + pokemon.getCp());
-		pokemonType.setText(PokemonType.ArraytoString(pokemonEnum.getType()));
-		pokemonHP.setText(pokemon.getStamina() + " / " + pokemon.getMaxStamina());
-		pokemonWeight.setText(String.valueOf(pokemonData.getWeightKg()));
-		pokemonHeight.setText(String.valueOf(pokemon.getHeightM()));
-		pokemonHasCandy.setText(String.valueOf(pokemon.getCandy()));
-		pokemonUpgrades.setText(String.valueOf(pokemonData.getNumUpgrades()));
 		powerUpStardustLabel.setText("Stardust: " + Util.getPowerUPStardust(pokemonData.getNumUpgrades()));
 		powerUpCandyLabel.setText("Candy: " + Util.getPowerUPCandy(pokemonData.getNumUpgrades()));
 		evolveCandyLabel.setText("Candy: " + pokemon.getCandiesToEvolve());
+
+		model.addRow(new String[] {"Type", PokemonType.ArraytoString(pokemonEnum.getType())});
+		model.addRow(new String[] {"HP", pokemon.getStamina() + " / " + pokemon.getMaxStamina()});
+		model.addRow(new String[] {"Weight", String.valueOf(pokemonData.getWeightKg())});
+		model.addRow(new String[] {"Height", String.valueOf(pokemon.getHeightM())});
+		model.addRow(new String[] {"Candy", String.valueOf(pokemon.getCandy())});
+		model.addRow(new String[] {"UpgradesCount", String.valueOf(pokemonData.getNumUpgrades())});
+		model.addRow(new String[] {"BattlesAttacked", String.valueOf(pokemon.getBattlesAttacked())});
+		model.addRow(new String[] {"BattlesDefended", String.valueOf(pokemon.getBattlesDefended())});
+		model.addRow(new String[] {"IndividualAttack", String.valueOf(pokemon.getIndividualAttack())});
+		model.addRow(new String[] {"IndividualDefense", String.valueOf(pokemon.getIndividualDefense())});
+		model.addRow(new String[] {"IndividualStamina", String.valueOf(pokemon.getIndividualStamina())});
+
 		renameButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -81,9 +84,7 @@ public class ContentWindow implements Window {
 				try {
 					pokemon.renamePokemon(name);
 					instance.pokemonNickname.setText("(" + name + ")");
-				} catch (LoginFailedException e1) {
-					errorDialog();
-				} catch (RemoteServerException e1) {
+				} catch (Exception e1) {
 					errorDialog();
 				}
 			}
@@ -93,15 +94,13 @@ public class ContentWindow implements Window {
 			public void actionPerformed(ActionEvent e) {
 				int dialog = JOptionPane.showConfirmDialog(instance.getMainPanel(),
 						"You can't take it back after it's transferred to the Professor.\n" +
-						"Do you really want to transfer Bulbasaur to the Professor?");
+								"Do you really want to transfer Bulbasaur to the Professor?");
 				if(dialog != 0) return;
 				try {
 					pokemon.transferPokemon();
 					MainWindow.getInstance().updatePokemons();
 					MainWindow.getInstance().addTabs();
-				} catch (LoginFailedException e1) {
-					errorDialog();
-				} catch (RemoteServerException e1) {
+				} catch (Exception e1) {
 					errorDialog();
 				}
 			}
@@ -117,9 +116,7 @@ public class ContentWindow implements Window {
 					pokemon.powerUp();
 					MainWindow.getInstance().updatePokemons();
 					MainWindow.getInstance().addTabs();
-				} catch (LoginFailedException e1) {
-					errorDialog();
-				} catch (RemoteServerException e1) {
+				} catch (Exception e1) {
 					errorDialog();
 				}
 			}
@@ -135,9 +132,7 @@ public class ContentWindow implements Window {
 					pokemon.evolve();
 					MainWindow.getInstance().updatePokemons();
 					MainWindow.getInstance().addTabs();
-				} catch (LoginFailedException e1) {
-					errorDialog();
-				} catch (RemoteServerException e1) {
+				} catch (Exception e1) {
 					errorDialog();
 				}
 			}
@@ -145,6 +140,7 @@ public class ContentWindow implements Window {
 	}
 
 	private static Field protoField;
+
 	public static PokemonDataOuterClass.PokemonData getPokemonData(Pokemon pokemon) throws ReflectiveOperationException {
 		if(protoField == null) {
 			protoField = pokemon.getClass().getDeclaredField("proto");
@@ -164,5 +160,10 @@ public class ContentWindow implements Window {
 	@Override
 	public JPanel getMainPanel() {
 		return mainPanel;
+	}
+
+	private void createUIComponents() {
+		model = new DefaultTableModel(new String[] {"Name", "Value"}, 0);
+		contentTable = new JTable(model);
 	}
 }
