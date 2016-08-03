@@ -1,6 +1,7 @@
 package com.github.syuchan1005.pokego;
 
 import com.pokegoapi.exceptions.LoginFailedException;
+import com.pokegoapi.exceptions.RemoteServerException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -8,11 +9,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.regex.Pattern;
 
 /**
  * Created by syuchan on 2016/07/24.
@@ -26,28 +24,20 @@ public class LoginWindow {
 	private JPanel ptcLoginPanel;
 
 	public LoginWindow(final MainWindow mainWindow) {
-		loginButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				loginButton.setEnabled(false);
-				Util.LoginType type = (Util.LoginType) comboBox1.getSelectedItem();
-				Util.setType(type);
-				Util.setUserName(getUserText());
-				Util.setPassWord(getPassText());
-				try {
-					mainWindow.addComponent();
-				} catch (LoginFailedException e1) {
-					JOptionPane.showMessageDialog(mainWindow, "Login Failed", "Error", JOptionPane.ERROR_MESSAGE);
-					loginButton.setEnabled(true);
-				}
+		loginButton.addActionListener(e -> {
+			Util.LoginType type = (Util.LoginType) comboBox1.getSelectedItem();
+			Util.setType(type);
+			Util.setUserName(getUserText());
+			Util.setPassWord(getPassText());
+			try {
+				mainWindow.addComponent();
+			} catch (LoginFailedException |RemoteServerException e1) {
+				JOptionPane.showMessageDialog(mainWindow, "Login Failed", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		});
-		comboBox1.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JComboBox<Enum> comboBox = (JComboBox<Enum>) e.getSource();
-				ptcLoginPanel.setVisible(((Util.LoginType) comboBox.getSelectedItem()) == Util.LoginType.PTC);
-			}
+		comboBox1.addActionListener(e -> {
+			JComboBox<Enum> comboBox = (JComboBox<Enum>) e.getSource();
+			ptcLoginPanel.setVisible(((Util.LoginType) comboBox.getSelectedItem()) == Util.LoginType.PTC);
 		});
 		passText.addKeyListener(new KeyAdapter() {
 			@Override

@@ -14,12 +14,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseWheelEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 	private List<JMenuItem> sortItems = new ArrayList<>();
 	private JMenu otherMenu;
 	private JMenuItem createImage, updatePokemon;
+	private JMenuItem logoutMenu;
 	private JTabbedPane tabbedPane1;
 	private List<ContentWindow> pokemons;
 	private LoginWindow loginWindow;
@@ -49,7 +51,11 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 	public MainWindow() {
 		mainWindow = this;
 		this.setTitle("PokemonGoChecker");
-		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				System.exit(0);
+			}
+		});
 		loginWindow = new LoginWindow(this);
 		tabbedPane1.addTab("Login", loginWindow.getMainPanel());
 		this.setContentPane(mainPanel);
@@ -91,12 +97,15 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 		updatePokemon.addActionListener(this);
 		otherMenu.add(createImage);
 		otherMenu.add(updatePokemon);
+		logoutMenu = new JMenuItem("Logout");
+		logoutMenu.addActionListener(this);
 		menuBar.add(sortMenu);
 		menuBar.add(otherMenu);
+		menuBar.add(logoutMenu);
 		this.setJMenuBar(menuBar);
 	}
 
-	public void addComponent() throws LoginFailedException {
+	public void addComponent() throws LoginFailedException, RemoteServerException {
 		PokemonGo pokemonGo = null;
 		try {
 			pokemonGo = Util.getPokemonGo();
@@ -115,8 +124,8 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
 				int newIndex = tabbedPane.getSelectedIndex() + e.getWheelRotation();
-				if (newIndex < 0) tabbedPane.setSelectedIndex(0);
-				else if (newIndex >= tabbedPane.getTabCount()) tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+				if(newIndex < 0) tabbedPane.setSelectedIndex(0);
+				else if(newIndex >= tabbedPane.getTabCount()) tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
 				else tabbedPane.setSelectedIndex(newIndex);
 			}
 		});
@@ -204,7 +213,7 @@ public class MainWindow extends JFrame implements ActionListener, Window {
 				case "UPDATEPOKEMONS":
 					try {
 						updatePokemons();
-						playerWindow.getPokemonCount().setText(pokemons.size() + " / " + Util.getPokemonGo().getPlayerProfile().getPokemonStorage());
+						playerWindow.getPokemonCount().setText(pokemons.size() + " / " + Util.getPokemonGo().getPlayerProfile().getPlayerData().getMaxPokemonStorage());
 					} catch (LoginFailedException e1) {
 						e1.printStackTrace();
 					} catch (RemoteServerException e1) {

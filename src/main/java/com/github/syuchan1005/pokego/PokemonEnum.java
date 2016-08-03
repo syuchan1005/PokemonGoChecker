@@ -680,7 +680,6 @@ public enum PokemonEnum {
 
 	public PokemonType[] getType() {
 		return new PokemonType[] {PokemonType.Unimplemented};
-		// return type;
 	}
 
 	public static PokemonEnum getPokemonEnumByid(int id) {

@@ -34,6 +34,13 @@ public class Util implements GoogleCredentialProvider.OnGoogleLoginOAuthComplete
 	private static LoginType type;
 	private static String userName, passWord;
 	public static boolean googleAuth = false;
+	public static Util instance = new Util();
+
+	private Util() {}
+
+	public static Util getInstance() {
+		return instance;
+	}
 
 	public static void setType(LoginType type) {
 		Util.type = type;
@@ -75,8 +82,8 @@ public class Util implements GoogleCredentialProvider.OnGoogleLoginOAuthComplete
 					pokemonGo = new PokemonGo(new PtcCredentialProvider(http, userName, passWord), http);
 					break;
 				case Google:
-					pokemonGo = new PokemonGo(new GoogleCredentialProvider(http, new Util()), http);
-					while(!googleAuth) ;
+					pokemonGo = new PokemonGo(new GoogleCredentialProvider(http, instance), http);
+					while(!googleAuth);
 					break;
 			}
 			MainWindow.getInstance().createMenuBar();
